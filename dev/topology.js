@@ -229,8 +229,8 @@ var topology = (function(topology, $, _, d3, console) {
 
     // Draw a topology diagram
     self.draw = function(data) {
-      self.data = self.prepareData(data);
-      self.maxNodes = _.max(_.map(data.tiers, function(tier) {return _.size(tier.resources || {});}));
+    self.data = self.prepareData(data);
+    self.maxNodes = _.max(_.map(data.tiers, function(tier) {return _.size(tier.resources || {});}));
 
       // draw border
       if (self.config.border === true) {
@@ -355,6 +355,7 @@ var topology = (function(topology, $, _, d3, console) {
 
         // Tier node distribution
         var tierResourceCount = _.size(tier.resources);
+        var nodeWidth = (self.width - NODES_LEFT_MERGIN) / self.maxNodes;
         tier.nodeOffset = (totalWidth - (_.size(tier.resources) * (NODE_WIDTH + NODE_SEPARATOR))) / 2 ;
       });
 
@@ -403,7 +404,11 @@ var topology = (function(topology, $, _, d3, console) {
           .attr('id', function(d) {return 'id_' + d.value.id || _.uniqueId();})
           .attr('class', 'resource')
           .attr('transform', function(d, i) {
-            d.x = self.data.tiers[d.value.tier].nodeOffset + (i * calculatedWidth) + NODES_LEFT_MERGIN;
+            var fullNodeWidth = calculatedWidth + NODE_SEPARATOR;
+            var totalWidth = self.maxNodes * (fullNodeWidth);
+            var resourceCount = _.size(self.data.tiers[d.value.tier].resources);
+            var nodeOffset = (totalWidth - (resourceCount * fullNodeWidth)) / 2;
+            d.x = nodeOffset + (i * calculatedWidth) + NODES_LEFT_MERGIN;
             d.y = 20;
             return 'translate(' + [d.x, d.y] + ')';
           })
@@ -572,6 +577,7 @@ var topology = (function(topology, $, _, d3, console) {
       var sourceTier = d3.select('#tier_' + source.value.tier)[0][0].__data__;
       var targetTier = d3.select('#tier_' + target.value.tier)[0][0].__data__;
       var nodeWidth = (self.width - NODES_LEFT_MERGIN) / self.maxNodes;
+      
       self.canvas.append('line')
         .attr('class', 'link topology-tooltip')
         .attr('title', function(d) {
