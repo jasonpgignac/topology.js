@@ -75,82 +75,12 @@ var topology = (function(topology, $, _, d3, console) {
 
   var NODE_HEADER=55,
       NODES_LEFT_MERGIN = 70,
-      NODE_WIDTH = 80,
       NODE_BOTTOM_MARGIN = 30,
       NODE_SEPARATOR = 5,
       SERVICE_HEIGHT=20,
       RESOURCE_TYPES = ['compute', 'load-balancer', 'database', 'application'];
 
-  // Set up SVG definitions
-  function setupDefinitions(svg, resourceTypes, statusColors, iconRoot) {
-    if (typeof resourceTypes === 'undefined') {
-      resourceTypes = RESOURCE_TYPES;
-    }
-    if (typeof statusColors === 'undefined') {
-      statusColors = ['black', 'gray', 'green', 'orange', 'red'];
-    }
-    if (typeof iconRoot === 'undefined') {
-      iconRoot = DEFAULT_ICON_ROOT;
-    }
-
-    var defs = svg.append('defs');
-
-    _.each(resourceTypes, function(rtype) {
-      // Plain, colorless icons
-      defs.append('pattern')
-        // pattern is set up to fit in bounding rectangle so that size is determined when the pattern is applied
-        .attr('id', rtype + '-icon')
-        .attr('patternUnits', 'objectBoundingBox')
-        .attr('width', 1)
-        .attr('height', 1)
-        .attr('x', 0)
-        .attr('y', 0)
-        .attr('viewBox', '0 0 100 100')
-        .attr('patternContentUnits', 'objectBoundingBox')
-        .append('image')
-          .attr('xlink:href', iconRoot + rtype + '.svg')
-          .attr('x', 0)
-          .attr('y', 0)
-          .attr('width', 100)
-          .attr('height', 100);
-      // Status (colored) icons for each type
-      _.each(statusColors, function(color) {
-        defs.append('pattern')
-          .attr('id', rtype + '-' + color + '-icon')
-          .attr('patternUnits', 'objectBoundingBox')
-          .attr('width', 1)
-          .attr('height', 1)
-          .attr('x', 0)
-          .attr('y', 0)
-          .append('image')
-            .attr('xlink:href', iconRoot + rtype + '-' + color + '.svg')
-            .attr('x', 0)
-            .attr('y', 0)
-            .attr('width', 20)
-            .attr('height', 20);
-      });
-    });
-
-    // Opinion icons
-    _.each(['icon-alert-circled', 'icon-checkmark-circled', 'icon-close-circled'], function(rtype) {
-      defs.append('pattern')
-        .attr('id', rtype + '-icon')
-        .attr('patternUnits', 'objectBoundingBox')
-        .attr('width', 1)
-        .attr('height', 1)
-        .attr('x', 0)
-        .attr('y', 0)
-        .attr('viewBox', '0 0 100 100')
-        .attr('patternContentUnits', 'objectBoundingBox')
-        .append('image')
-          .attr('xlink:href', iconRoot + rtype + '.svg')
-          .attr('x', 0)
-          .attr('y', 0)
-          .attr('width', 100)
-          .attr('height', 100);
-    });
-
-  }
+  
 
   // Create a hidden popover content container for use with bootstrap popovers
   var popoverId = _.uniqueId();
@@ -189,8 +119,7 @@ var topology = (function(topology, $, _, d3, console) {
           .attr('height', self.height)
           .attr('id', self.id)
           .attr('class', 'canvas');
-    setupDefinitions(self.canvas, config.resourceTypes, config.colors, config.iconRoot);
-
+    
     // Draw a topology diagram
     self.draw = function(data) {
       self.data = self.prepareData(data);
