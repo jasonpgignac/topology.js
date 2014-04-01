@@ -335,7 +335,6 @@ var topology = (function(topology, $, _, d3, console) {
       });
 
       // Calculate coords
-      var totalWidth = maxNodes * (NODE_WIDTH + NODE_SEPARATOR);
       var tierGravity = {  // determines where to place that tier vertically
         dns: 5,
         lb: 10,
@@ -352,11 +351,6 @@ var topology = (function(topology, $, _, d3, console) {
         tier.height = NODE_HEADER + 40 + (tier.services.length * SERVICE_HEIGHT);
         tier.y = tierY;
         tierY += tier.height + 5;
-
-        // Tier node distribution
-        var tierResourceCount = _.size(tier.resources);
-        var nodeWidth = (self.width - NODES_LEFT_MERGIN) / self.maxNodes;
-        tier.nodeOffset = (totalWidth - (_.size(tier.resources) * (NODE_WIDTH + NODE_SEPARATOR))) / 2 ;
       });
 
       return data;
