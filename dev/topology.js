@@ -571,14 +571,15 @@ var topology = (function(topology, $, _, d3, console) {
       var target = d3.select(to)[0][0].__data__;
       var sourceTier = d3.select('#tier_' + source.value.tier)[0][0].__data__;
       var targetTier = d3.select('#tier_' + target.value.tier)[0][0].__data__;
+      var nodeWidth = (self.width - NODES_LEFT_MERGIN) / self.maxNodes;
       self.canvas.append('line')
         .attr('class', 'link topology-tooltip')
         .attr('title', function(d) {
           return status;})
         .classed(status, 1)
-        .attr('x1', source.x + sourceTier.x + NODE_WIDTH/2)
+        .attr('x1', source.x + sourceTier.x + nodeWidth/2)
         .attr('y1', source.y + 1 + sourceTier.y + sourceTier.height - NODE_BOTTOM_MARGIN)
-        .attr('x2', target.x + targetTier.x + NODE_WIDTH/2)
+        .attr('x2', target.x + targetTier.x + nodeWidth/2)
         .attr('y2', target.y + targetTier.y);
     };
 
