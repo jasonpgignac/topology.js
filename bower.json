@@ -1,6 +1,6 @@
 {
   "name": "topology",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": ["./dev/topology.js","./dev/topology.css"],
   "ignore": [
     "demo/*"

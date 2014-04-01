@@ -562,6 +562,11 @@ var topology = (function(topology, $, _, d3, console) {
 
     // Draw a connection between two nodes using their ids
     self.drawConnection = function(from, to, status) {
+      //Temporary Hack, to skip connections without a known endpoint
+      if(to=="#id_UNKNOWN") {
+        return null;
+      }
+      
       var source = d3.select(from)[0][0].__data__;
       var target = d3.select(to)[0][0].__data__;
       var sourceTier = d3.select('#tier_' + source.value.tier)[0][0].__data__;
