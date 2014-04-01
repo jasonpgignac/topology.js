@@ -10,7 +10,7 @@
 
  Requires:
 
-   jQuery, bootstrap, d3, _.underscore, and icons (see DEFAULT_ICON_ROOT)
+   jQuery, bootstrap, d3, _.underscore, and icons
    Also topology.css
 
 ***************************************************************************
@@ -19,7 +19,7 @@
 /* JSHint Directives */
 /* global d3 */
 /* global _ */
-/* global $ */
+/* global jQuery */
 
 var topology = (function(topology, $, _, d3, console) {
   'use strict';
@@ -44,11 +44,6 @@ var topology = (function(topology, $, _, d3, console) {
   if (typeof $().popover !== 'function') {
     throw 'Bootstrap Popover Required, but does not seem to be installed.';
   }
-
-  //
-  //private vars and functions (in library scope only)
-  //
-  var root = this; // if we ever need to refer to this - it's "window" in browsers
 
   // Check if an object is an array (http://shop.oreilly.com/product/9780596517748.do)
   function isQrray(value) {
@@ -78,38 +73,7 @@ var topology = (function(topology, $, _, d3, console) {
     return '';
   }
 
-  /*
-   * Deep find in an object. Returns all instances of objects that have
-   * obj[propertyName] == value. If value is undefined, then it returns
-   * all objects that have the property propertyName.
-  */
-  function deepFind(theObject, propertyName, value, results) {
-    if (!(results instanceof Array)) {
-      results = [];
-    }
-
-    if (theObject instanceof Array) {
-      for(var i = 0; i < theObject.length; i++) {
-        deepFind(theObject[i], propertyName, value, results);
-      }
-    } else {
-      for(var prop in theObject) {
-        if (prop === propertyName) {
-          if(typeof value === 'undefined' || theObject[prop] === value) {
-            results.push(theObject);
-          }
-        }
-        if (theObject[prop] instanceof Object || theObject[prop] instanceof Array) {
-          deepFind(theObject[prop], propertyName, value, results);
-        }
-      }
-    }
-    return results;
-  }
-
-  var DEFAULT_ICON_ROOT = 'https://289d1f3753d5f066ce31-858f474b0c2ae883d2020e5da9286545.ssl.cf2.rackcdn.com/',
-      IMAGE_SIZE = 150,
-      NODE_HEADER=55,
+  var NODE_HEADER=55,
       NODES_LEFT_MERGIN = 70,
       NODE_WIDTH = 80,
       NODE_BOTTOM_MARGIN = 30,
@@ -264,7 +228,7 @@ var topology = (function(topology, $, _, d3, console) {
         // Find services running more than once on a single server
         maxNodes = Math.max(maxNodes, _.size(tier.resources));
         var dupes = [];
-        _.each(tier.resources, function(v, k) {
+        _.each(tier.resources, function(v) {
           v.tier = key; // mark each resource with its tier
           if (isQrray(v.services)) {
             var nodeServices = [];
@@ -284,7 +248,7 @@ var topology = (function(topology, $, _, d3, console) {
 
         // Get unique service[:port] list for this tier
         var services = [];
-        _.each(tier.resources, function(resource, k) {
+        _.each(tier.resources, function(resource) {
           if (isQrray(resource.services)) {
             _.each(resource.services, function(svc) {
               if (typeof svc.process === 'string') {
@@ -300,7 +264,7 @@ var topology = (function(topology, $, _, d3, console) {
         tier.services = _.uniq(services).sort();
 
         // Index each service in each resource so we can use it when rendering node services
-        _.each(tier.resources, function(v, k) {
+        _.each(tier.resources, function(v) {
           if (isQrray(v.services)) {
             _.each(v.services, function(svc) {
               if (typeof svc.process === 'string') {
@@ -325,7 +289,7 @@ var topology = (function(topology, $, _, d3, console) {
           });
         }
 
-        _.each(tier.resources, function(resource, k) {
+        _.each(tier.resources, function(resource) {
           // Group host opinions by status
           if (isQrray(resource.opinions)) {
             resource.groupedOpinions = _.groupBy(resource.opinions, 'status');
@@ -362,7 +326,7 @@ var topology = (function(topology, $, _, d3, console) {
         .append('g')
           .attr('id', function(d) {return 'tier_' + d.key;})
           .attr('class', 'tier')
-          .attr('transform', function(d, index) {
+          .attr('transform', function(d) {
             d.x = 0;
             d.y = d.value.y;
             d.height = d.value.height;
@@ -446,7 +410,7 @@ var topology = (function(topology, $, _, d3, console) {
         .enter()
         .append('g')
           .attr('class', 'opinion-box')
-          .attr('transform', function(d, i) {
+          .attr('transform', function(d) {
             d.x = 0;
             d.y = 20;
             return 'translate(' + [d.x, d.y] + ')';
@@ -463,11 +427,11 @@ var topology = (function(topology, $, _, d3, console) {
             .style('fill', function(d) {
               var status = (d.key || '').toLowerCase();
               if (status === 'ok') {
-                  return 'url(#icon-checkmark-circled-icon)';
+                return 'url(#icon-checkmark-circled-icon)';
               } else if (status.substr(0, 3) === 'err') {
-                  return 'url(#icon-close-circled-icon)';
+                return 'url(#icon-close-circled-icon)';
               } else if (status.substr(0, 4) === 'warn') {
-                  return 'url(#icon-alert-circled-icon)';
+                return 'url(#icon-alert-circled-icon)';
               } else {
                 return 'transparent';
               }
@@ -493,7 +457,7 @@ var topology = (function(topology, $, _, d3, console) {
         .enter()
         .append('g')
           .attr('class', function(d) {return 'service-entry service_' + d.status;})
-          .attr('transform', function(d, i) {
+          .attr('transform', function(d) {
             d.x = 4;
             d.y = ((d.index+1) * SERVICE_HEIGHT) + NODE_HEADER - 6;
             return 'translate(' + [d.x, d.y] + ')';
@@ -512,13 +476,14 @@ var topology = (function(topology, $, _, d3, console) {
           .style('fill', function(d) {
             var status = (d.status || '').toLowerCase();
             if (status === 'ok') {
-                return 'url(#icon-checkmark-circled-icon)';
+              return 'url(#icon-checkmark-circled-icon)';
             } else if (status.substr(0, 3) === 'err') {
-                return 'url(#icon-close-circled-icon)';
+              return 'url(#icon-close-circled-icon)';
             } else if (status.substr(0, 4) === 'warn') {
-                return 'url(#icon-alert-circled-icon)';
-            } else
+              return 'url(#icon-alert-circled-icon)';
+            } else {
               return 'transparent';
+            }
           });
 
       return nodes;
@@ -550,8 +515,8 @@ var topology = (function(topology, $, _, d3, console) {
 
     // Draw connections between nodes
     self.drawConnections = function(data) {
-      _.each(data.tiers, function(tier, tkey) {
-        _.each(tier.resources, function(resource, rkey) {
+      _.each(data.tiers, function(tier) {
+        _.each(tier.resources, function(resource) {
           _.each(resource.connections, function(connection) {
             self.drawConnection('#id_' + resource.id, '#id_' + connection.id, 'connection_' + connection.status);
           });
@@ -562,7 +527,7 @@ var topology = (function(topology, $, _, d3, console) {
     // Draw a connection between two nodes using their ids
     self.drawConnection = function(from, to, status) {
       //Temporary Hack, to skip connections without a known endpoint
-      if(to=="#id_UNKNOWN") {
+      if(to === '#id_UNKNOWN') {
         return null;
       }
       
@@ -574,8 +539,7 @@ var topology = (function(topology, $, _, d3, console) {
       
       self.canvas.append('line')
         .attr('class', 'link topology-tooltip')
-        .attr('title', function(d) {
-          return status;})
+        .attr('title', status)
         .classed(status, 1)
         .attr('x1', source.x + sourceTier.x + nodeWidth/2)
         .attr('y1', source.y + 1 + sourceTier.y + sourceTier.height - NODE_BOTTOM_MARGIN)
@@ -625,4 +589,4 @@ var topology = (function(topology, $, _, d3, console) {
   };
 
   return topology;
-}).call(this, topology, this.$ || jQuery, this._ || _, this.d3 || d3, console);
+}).call(this, topology, this.jQuery || jQuery, this._ || _, this.d3 || d3, console);
