@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Topology</title>
+    <meta charset=utf-8></meta>
+    
+    <link href="/bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet" type="text/css"></link>
+    <link href="/topology.css" rel="stylesheet" type="text/css"></link>
+    
+    <script src="/bower_components/d3/d3.js"></script>
+    <script src="/bower_components/jquery/dist/jquery.js"></script>
+    <script src="/bower_components/underscore/underscore.js"></script>
+    <script src="/bower_components/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="/topology.js"></script>
+  </head>
+  <body>
+    <div>
+      <h5>Multiple Resources</h5>
+      <div id="my_drawing" style="overflow:auto; margin-left: 5px;"/>
+    </div>
+    <div>
+      <h5>Single Resource</h5>
+      <div id="my_drawing2" style="overflow:auto; margin-left: 5px;"/>
+    </div>
+  </body>
+
+  <script>
+/*
+**********************************
+Using the topology.js library
+**********************************
+*/
+
+/* Render a multi-server topology */
+var multi_data = {
+  tiers: {
+    dns: {
+      resources: {
+        'acme.com': {
+          connections: [{id: 'lb01'}]
+        }
+      }
+    },
+    lb: {
+      resources: {
+        lb01: {
+          id: "lb01",
+          type: "load-balancer",
+          url: "http://rackspace.com",
+          connections: [
+            {id: "1000", status: "OK"},
+            {id: "876555-998646-3874", status: "ERROR"},
+            {id: "29847624", status: "OK"}
+          ]
+        }
+      }
+    },
+    db: {
+      resources: {
+        db01: {
+          id: "db01",
+          type: "database",
+          services: [
+            {
+              process:  "mysql",
+              address: "127.0.0.1",
+              port: 3535,
+              protocol: "tcp",
+              status: "LISTENING"
+            }
+          ]
+        }, 
+        slave: {
+          type: "compute",
+          services: [
+            {
+              process:  "mysql",
+              address: "0.0.0.0",
+              port: 3535,
+              protocol: "tcp",
+              status: "LISTENING"
+            }, 
+            {
+              process:  "mysql",
+              address: "127.0.0.1",
+              port: 3536,
+              protocol: "tcp",
+              status: "LISTENING"
+            }
+          ]
+        }
+      }
+    },
+    webhead: {
+      resources: {
+        srv01: {
+          id: "29847624",
+          type: "compute",
+          services: [
+            {
+              process:  "apache2",
+              address: "127.0.0.1",
+              port: 8080,
+              protocol: "tcp",
+              status: "LISTENING"
+            }, {
+              process:  "varnish",
+              address: "127.0.0.1",
+              port: 80,
+              protocol: "tcp",
+              status: "LISTENING",
+              opinions: [
+                {
+                  status: "ERROR",
+                  description: "varnish is not listening on an open port"
+                }, {
+                  status: "Ok",
+                  description: "varnish is running"
+                }
+              ]
+            }, {
+              process:  "redis",
+              address: "127.0.0.1",
+              port: 6329,
+              protocol: "tcp",
+              status: "LISTENING"
+            }
+          ],
+          connections: [
+            {id: "db01", status: "OK"}
+          ],
+          opinions: [
+                {
+                  status: "ERROR",
+                  description: "I don't like this server"
+                }, {
+                  status: "Ok",
+                  description: "Bit it's running running"
+                }
+              ]
+        },
+        srv02: {
+          id: "1000",
+          type: "compute",
+          services: [
+            {
+              process:  "apache2",
+              address: "127.0.0.1",
+              port: 8080,
+              protocol: "tcp",
+              status: "LISTENING",
+              opinions: [
+                {
+                  status: "ERROR",
+                  description: "apache is not listening on an open port"
+                }, {
+                  status: "error",
+                  description: "apache is misconfigured, bra!"
+                }, {
+                  status: "Warning",
+                  description: "Something smells fishy in here"
+                }, {
+                  status: "Ok",
+                  description: "This is not the error you are looking for.... &ltwave&gt"
+                }
+              ]
+            }, {
+              process:  "varnish",
+              address: "127.0.0.1",
+              port: 80,
+              protocol: "tcp",
+              status: "LISTENING"
+            }
+          ]
+        },
+        srv03: { /* testing blanks */ },
+        srv04: {
+          id: "876555-998646-3874",
+          services: [
+            {
+              process:  "apache2",
+              address: "127.0.0.1",
+              port: 80,
+              protocol: "tcp",
+              status: "LISTENING"
+            }
+          ]
+        }
+      }
+    }
+  },
+  opinions: {
+    hosts: {
+      srv02: {
+        some_key1: {status: "ok", description: "This is appended from opinions"},
+        some_key2: {status: "ok", description: "This is appended from opinions"},
+        some_key3: {status: "ok", description: "This is appended from opinions"},
+        some_key4: {status: "ok", description: "This is appended from opinions"},
+        some_key5: {status: "ok", description: "This is appended from opinions"},
+        some_key6: {status: "ok", description: "This is appended from opinions"},
+        some_key7: {status: "ok", description: "This is appended from opinions"},
+        some_key8: {status: "ok", description: "This is appended from opinions"}
+      }
+    }
+  }
+};
+
+var diagram = new topology.diagram("#my_drawing", {width: 420, height: 600});
+
+var d1 = diagram.draw(multi_data);
+if (typeof d1.id !== "string")
+  console.warn("Not getting back diagram from 'diagram.draw': ", d1.id);
+
+
+/* Render a single server topology */
+
+var single = {
+  tiers: {
+    " ": {
+      resources: {
+        srv01: {
+          id: "29847624",
+          type: "compute",
+          services: [
+            {
+              process:  "apache2",
+              address: "127.0.0.1",
+              port: 8080,
+              protocol: "tcp",
+              status: "LISTENING"
+            }, {
+              process:  "varnish",
+              address: "127.0.0.1",
+              port: 80,
+              protocol: "tcp",
+              status: "LISTENING"
+            }
+          ]
+        }
+      }
+    }
+  }
+};
+
+var diagram2 = new topology.diagram("#my_drawing2", {width: 160, height: 200, border: true});
+
+var d2 = diagram2.draw(single);
+if (typeof d2.id !== "string")
+  console.warn("Not getting back diagram from 'diagram.draw': ", d2.id);
+  </script>
+</html>

@@ -1,0 +1,102 @@
+.canvas text {
+  font-family: verdana;
+  font-size: small;
+}
+
+.canvas rect.border {
+  stroke: gray;
+  stroke-width: 1;
+  fill: transparent;
+  display: inline;
+  overflow: scroll;
+}
+
+.tier>rect {
+  fill: #F8F8F8;
+  stroke: #666666;
+  stroke-width: 1;
+  stroke-dasharray: 1;
+  display: inline;
+}
+
+.tier>.title {
+  font-weight: bold;
+  margin-left: 20px;
+}
+
+.service>rect {
+  cursor: inherit;
+  stroke: #eeeeee;
+  fill: transparent;  
+}
+
+.service>.title {
+  font-weight: normal;
+}
+
+.service-entry text {
+  font-weight: normal;
+  font-size: small;  
+}
+
+.service_LISTENING text {
+  font-weight: normal;
+  font-size: small;  
+}
+
+.service-underline {
+  stroke-width: 0.2px;
+  stroke: gray;
+  stroke-dasharray: 1;
+}
+
+.resource>.title {
+  font-weight: bold;
+}
+
+.resource-border {
+  stroke: #224488;
+  fill: transparent;
+}
+
+text.resource-text {
+  font-size: x-small;
+}
+
+.resource-underline {
+  stroke-width: 0.5px;
+  stroke: #224488;
+}
+
+.resource {
+  cursor: pointer;
+}
+
+.resource>rect {
+  fill: #FFFFFF;
+}
+
+.resource-icon {
+  stroke: transparent;
+  display: inline;
+}
+
+.link {
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+.link.connection_OK, .link.connection_ONLINE {
+  stroke: green;
+  stroke-width: 2px;
+}
+
+.link.connection_DISABLED {
+  stroke: gray;
+  stroke-width: 2px;
+}
+
+.link.connection_ERROR, .link.connection_OFFLINE {
+  stroke: red;
+  stroke-width: 2px;
+}
