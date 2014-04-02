@@ -18,9 +18,9 @@
 
 /* JSHint Directives */
 /* global d3 */
-/* global _ */
 /* global jQuery */
-
+// TODO: Move the HTML in this to a template, so we can get rid of the multistr
+/* jshint multistr: true */
 var topology = (function(topology, $, d3, console) {
   'use strict';
   // Check dependencies (I made them injectable for future testing)
@@ -190,8 +190,8 @@ var topology = (function(topology, $, d3, console) {
           }
         });
         tier.services = services.filter(function (a, b, c) {
-            // keeps first occurrence
-            return c.indexOf(a) === b;
+          // keeps first occurrence
+          return c.indexOf(a) === b;
         }).sort();
 
         // Index each service in each resource so we can use it when rendering node services
@@ -223,7 +223,7 @@ var topology = (function(topology, $, d3, console) {
         jQuery.each(tier.resources, function(_i, resource) {
           // Group host opinions by status
           if (isQrray(resource.opinions)) {
-            resource.groupedOpinions = {}
+            resource.groupedOpinions = {};
             resource.opinions.forEach(function(opinion) {
               if(!resource.groupedOpinions[opinion.status]) {
                 resource.groupedOpinions[opinion.status] = [opinion];
@@ -247,14 +247,14 @@ var topology = (function(topology, $, d3, console) {
       var tierY = 5;
       
       var keys = [];
-      for(var key in data.tiers) { keys.push(key)};
+      for(var key in data.tiers) { keys.push(key); }
       keys = keys.sort(function(a,b) {
-        var a_gravity = tierGravity[a] || tierGravity._default;
-        var b_gravity = tierGravity[b] || tierGravity._default;
-        if(a_gravity === b_gravity) {
+        var aGravity = tierGravity[a] || tierGravity._default;
+        var bGravity = tierGravity[b] || tierGravity._default;
+        if(aGravity === bGravity) {
           return 0;
         }
-        if(a_gravity > b_gravity) {
+        if(aGravity > bGravity) {
           return 1;
         }
         return -1;
@@ -380,7 +380,7 @@ var topology = (function(topology, $, d3, console) {
               var header = '\
                 <h5 style="text-align: left;">\
                   Status \"' + d.key + '\"\
-                </h5>'
+                </h5>';
               var descriptions = jQuery.map(d.value, function(entry, memo) {
                 var description = '\
                   <p style="text-align: left;">\
