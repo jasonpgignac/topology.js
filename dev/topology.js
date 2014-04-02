@@ -83,7 +83,7 @@ var topology = (function(topology, $, _, d3, console) {
   
 
   // Create a hidden popover content container for use with bootstrap popovers
-  var popoverId = _.uniqueId();
+  var popoverId = 'topology-' + (new Date()).getTime();
   $('body').append('<div id="' + popoverId + '" style="display: none;"/>');
 
   //
@@ -112,7 +112,7 @@ var topology = (function(topology, $, _, d3, console) {
     self.height = config.height || 100;
     self.width = config.width || 100;
     self.parent = d3.selectAll(selector);
-    self.id = _.uniqueId('diagram_');
+    self.id = 'diagram-' + (new Date()).getTime();
     self.canvas = self.parent.selectAll('#' + self.uniqueId)
       .data([1]).enter().append('svg')
           .attr('width', self.width)
@@ -309,7 +309,9 @@ var topology = (function(topology, $, _, d3, console) {
         })
         .enter()
         .append('g')
-          .attr('id', function(d) {return 'id_' + d.value.id || _.uniqueId();})
+          .attr('id', function(d) {
+            return 'id_' + d.value.id || (new Date()).getTime();
+          })
           .attr('class', 'resource')
           .attr('transform', function(d, i) {
             var fullNodeWidth = calculatedWidth + NODE_SEPARATOR;
