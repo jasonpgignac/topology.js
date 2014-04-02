@@ -10,7 +10,7 @@
 
  Requires:
 
-   jQuery, bootstrap, d3, _.underscore, and icons
+   jQuery, bootstrap, and d3
    Also topology.css
 
 ***************************************************************************
@@ -21,7 +21,7 @@
 /* global _ */
 /* global jQuery */
 
-var topology = (function(topology, $, _, d3, console) {
+var topology = (function(topology, $, d3, console) {
   'use strict';
   // Check dependencies (I made them injectable for future testing)
   if (typeof topology === 'undefined') {
@@ -31,9 +31,6 @@ var topology = (function(topology, $, _, d3, console) {
   }
   if (typeof $ === 'undefined') {
     console.error('jQuery not loaded. topology.js requires it');
-  }
-  if (typeof _ === 'undefined') {
-    console.error('_.underscore not loaded. topology.js requires it');
   }
   if (typeof d3 === 'undefined') {
     console.error('d3 not loaded. topology.js requires it');
@@ -389,7 +386,6 @@ var topology = (function(topology, $, _, d3, console) {
                   <p style="text-align: left;">\
                     ' + (memo + 1) + ' - ' + entry.description + '\
                   </p>';
-                console.log(description);
                 return description;
               }).join('');
               return header + descriptions;
@@ -570,4 +566,4 @@ var topology = (function(topology, $, _, d3, console) {
   };
 
   return topology;
-}).call(this, topology, this.jQuery || jQuery, this._ || _, this.d3 || d3, console);
+}).call(this, topology, this.jQuery || jQuery, this.d3 || d3, console);
