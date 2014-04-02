@@ -123,7 +123,7 @@ var topology = (function(topology, $, _, d3, console) {
     // Draw a topology diagram
     self.draw = function(data) {
       self.data = self.prepareData(data);
-      self.maxNodes = _.max(_.map(data.tiers, function(tier) {
+      self.maxNodes = Math.max.apply(Math,jQuery.map(data.tiers, function(tier) {
         return Object.keys(tier.resources || {}).length;
       }));
 
