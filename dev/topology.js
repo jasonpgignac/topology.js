@@ -229,8 +229,8 @@ var topology = (function(topology, $, _, d3, console) {
 
     // Draw a topology diagram
     self.draw = function(data) {
-    self.data = self.prepareData(data);
-    self.maxNodes = _.max(_.map(data.tiers, function(tier) {return _.size(tier.resources || {});}));
+      self.data = self.prepareData(data);
+      self.maxNodes = _.max(_.map(data.tiers, function(tier) {return _.size(tier.resources || {});}));
 
       // draw border
       if (self.config.border === true) {
