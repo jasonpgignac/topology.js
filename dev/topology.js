@@ -153,15 +153,15 @@ var topology = (function(topology, $, _, d3, console) {
       }
 
       var maxNodes = 0;
-      _.each(data.tiers, function(tier, key) {
+      jQuery.each(data.tiers, function(key, tier) {
         // Find services running more than once on a single server
         maxNodes = Math.max(maxNodes, _.size(tier.resources));
         var dupes = [];
-        _.each(tier.resources, function(v) {
+        jQuery.each(tier.resources, function(_i, v) {
           v.tier = key; // mark each resource with its tier
           if (isQrray(v.services)) {
             var nodeServices = [];
-            _.each(v.services, function(svc) {
+            jQuery.each(v.services, function(_i, svc) {
               if (typeof svc.process === 'string') {
                 if (nodeServices.indexOf(svc.process) === -1) {
                   nodeServices.push(svc.process);
@@ -177,9 +177,9 @@ var topology = (function(topology, $, _, d3, console) {
 
         // Get unique service[:port] list for this tier
         var services = [];
-        _.each(tier.resources, function(resource) {
+        jQuery.each(tier.resources, function(_i, resource) {
           if (isQrray(resource.services)) {
-            _.each(resource.services, function(svc) {
+            jQuery.each(resource.services, function(_i, svc) {
               if (typeof svc.process === 'string') {
                 if (dupes.indexOf(svc.process) === -1) {
                   services.push(svc.process);
@@ -193,9 +193,9 @@ var topology = (function(topology, $, _, d3, console) {
         tier.services = _.uniq(services).sort();
 
         // Index each service in each resource so we can use it when rendering node services
-        _.each(tier.resources, function(v) {
+        jQuery.each(tier.resources, function(_i, v) {
           if (isQrray(v.services)) {
-            _.each(v.services, function(svc) {
+            jQuery.each(v.services, function(_i, svc) {
               if (typeof svc.process === 'string') {
                 var index = tier.services.indexOf(svc.process + (svc.port ? ':' + svc.port : ''));
                 if (index === -1) {
@@ -209,7 +209,8 @@ var topology = (function(topology, $, _, d3, console) {
 
         // Get host opinions
         if (Object.getOwnPropertyNames(data || {}).indexOf('opinions') > -1) {
-          _.each(tier.resources, function(resource, k) {
+          jQuery.each(tier.resources, function(k, resource) {
+            console.log(k,resource);
             var opinions = resource.opinions || [];
             $.merge(opinions, d3.values(data.opinions.hosts[k]));
             if (opinions.length > 0) {
@@ -218,7 +219,7 @@ var topology = (function(topology, $, _, d3, console) {
           });
         }
 
-        _.each(tier.resources, function(resource) {
+        jQuery.each(tier.resources, function(_i, resource) {
           // Group host opinions by status
           if (isQrray(resource.opinions)) {
             resource.groupedOpinions = _.groupBy(resource.opinions, 'status');
@@ -238,7 +239,7 @@ var topology = (function(topology, $, _, d3, console) {
       var tierY = 5;
       var keys = _.keys(data.tiers);
       keys = _.sortBy(keys, function(key){return tierGravity[key] || tierGravity._default;});
-      _.each(keys, function(key) {
+      jQuery.each(keys, function(_i, key) {
         var tier = data.tiers[key];
         // Tier y-coords
         tier.height = NODE_HEADER + 40 + (tier.services.length * SERVICE_HEIGHT);
@@ -444,11 +445,13 @@ var topology = (function(topology, $, _, d3, console) {
 
     // Draw connections between nodes
     self.drawConnections = function(data) {
-      _.each(data.tiers, function(tier) {
-        _.each(tier.resources, function(resource) {
-          _.each(resource.connections, function(connection) {
-            self.drawConnection('#id_' + resource.id, '#id_' + connection.id, 'connection_' + connection.status);
-          });
+      jQuery.each(data.tiers, function(_i, tier) {
+        jQuery.each(tier.resources, function(_i, resource) {
+          if(resource.connections) {
+            jQuery.each(resource.connections, function(_i, connection) {
+              self.drawConnection('#id_' + resource.id, '#id_' + connection.id, 'connection_' + connection.status);
+            });
+          }
         });
       });
     };
@@ -478,7 +481,9 @@ var topology = (function(topology, $, _, d3, console) {
 
     self.onClick = function(element, node) {
       $('.popover-marker').popover('hide');
-      _.each($('.popover-marker'), function(e) {e.classList.remove('popover-marker');});
+      jQuery.each($('.popover-marker'), function(_i, e) {
+        e.classList.remove('popover-marker');
+      });
 
       var content = '<table>';
       content += '<tr><td>Name:</td><td>' + node.key + '</td></tr>';
@@ -492,7 +497,7 @@ var topology = (function(topology, $, _, d3, console) {
       if (typeof node.value.url === 'string') {
         content += '<tr><td>URL:</td><td><a href="' + node.value.url + '"  target="_blank">' + node.value.url + '</a></td></tr>';
       }
-      _.each(node.info, function(d, k) {
+      jQuery.each(node.info, function(k, d) {
         content += '<tr><td>' + toTitleCase(k) + '</td><td>' + d + '</td></tr>';
       });
       $('#' + popoverId).html('<table>' + content + '</table>');
