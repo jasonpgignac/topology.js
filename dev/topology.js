@@ -222,7 +222,14 @@ var topology = (function(topology, $, _, d3, console) {
         jQuery.each(tier.resources, function(_i, resource) {
           // Group host opinions by status
           if (isQrray(resource.opinions)) {
-            resource.groupedOpinions = _.groupBy(resource.opinions, 'status');
+            resource.groupedOpinions = {}
+            resource.opinions.forEach(function(opinion) {
+              if(!resource.groupedOpinions[opinion.status]) {
+                resource.groupedOpinions[opinion.status] = [opinion];
+              } else {
+                resource.groupedOpinions[opinion.status].push(opinion);
+              }
+            });
           }
         });
 
