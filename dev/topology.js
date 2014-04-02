@@ -192,7 +192,10 @@ var topology = (function(topology, $, _, d3, console) {
             });
           }
         });
-        tier.services = _.uniq(services).sort();
+        tier.services = services.filter(function (a, b, c) {
+            // keeps first occurrence
+            return c.indexOf(a) === b;
+        }).sort();
 
         // Index each service in each resource so we can use it when rendering node services
         jQuery.each(tier.resources, function(_i, v) {
