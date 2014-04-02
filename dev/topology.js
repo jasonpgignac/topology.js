@@ -78,7 +78,7 @@ var topology = (function(topology, $, _, d3, console) {
       NODE_BOTTOM_MARGIN = 30,
       NODE_SEPARATOR = 5,
       SERVICE_HEIGHT=20,
-      RESOURCE_TYPES = ['compute', 'load-balancer', 'database', 'application'];
+      RESOURCE_TYPES = ['server', 'load-balancer', 'database', 'application'];
 
   
 
@@ -310,20 +310,24 @@ var topology = (function(topology, $, _, d3, console) {
           return (self.data.tiers[d.value.tier].services.length * SERVICE_HEIGHT) + NODE_HEADER + 10;
         })
         .attr('class', 'resource-border');
-      nodes.append('rect')
-         .attr('class', 'resource-icon')
+      nodes.append('image')
+        .attr('class', 'resource-icon')
         .attr('x', calculatedWidth - 30)
         .attr('width', 20)
         .attr('height', 20)
-        .style('fill', function(d) {
+        .attr('xlink:href', function(d) {
           if ('type' in d.value && RESOURCE_TYPES.indexOf(d.value.type) !== -1) {
             if ('status' in d.value) {
-              return 'url(#' + d.value.type + '-' + d.value.status + '-icon)';
+              return 'icons/' + d.value.type + '-' + d.value.status + '.svg)';
             } else {
-              return 'url(#' + d.value.type + '-icon)';
+              return 'icons/' + d.value.type + '.svg';
             }
           } else {
-            return 'transparent';
+            if ('status' in d.value) {
+              return 'icons/unknown-' + d.value.status + '.svg';
+            } else {
+              return 'icons/unknown.svg';
+            }
           }
         });
       nodes.append('text')
@@ -345,7 +349,7 @@ var topology = (function(topology, $, _, d3, console) {
             d.y = 20;
             return 'translate(' + [d.x, d.y] + ')';
           })
-          .append('rect')
+          .append('image')
             .attr('class', 'opinion topology-tooltip')
             .attr('title', function(d) {
               return '<h5 style="text-align: left;">Status \"' + d.key + '\"</h5>' + _.reduce(d.value, function(memo, entry){ return memo + '<p style="text-align: left;">- ' + entry.description + '</p>';}, '');
@@ -354,16 +358,16 @@ var topology = (function(topology, $, _, d3, console) {
             .attr('x', function(d, i) {return 4 + i * 10;})
             .attr('width', 10)
             .attr('height', 10)
-            .style('fill', function(d) {
+            .attr('xlink:href', function(d) {
               var status = (d.key || '').toLowerCase();
               if (status === 'ok') {
-                return 'url(#icon-checkmark-circled-icon)';
+                return 'icons/icon-checkmark-circled.svg';
               } else if (status.substr(0, 3) === 'err') {
-                return 'url(#icon-close-circled-icon)';
+                return 'icons/icon-close-circled.svg';
               } else if (status.substr(0, 4) === 'warn') {
-                return 'url(#icon-alert-circled-icon)';
+                return 'icons/icon-alert-circled.svg';
               } else {
-                return 'transparent';
+                return '';
               }
             });
 
@@ -396,26 +400,25 @@ var topology = (function(topology, $, _, d3, console) {
           .text(function(d) {return d.port || 'n/a';});
       entries.selectAll('.opinion')
         .data(function(service) {return service.opinions || [];}).enter()
-        .append('rect')
+        .append('image')
           .attr('class', 'opinion topology-tooltip')
           .attr('title', function(d) {return '<h5 style="text-align: left;">Status \"' + d.status + '\"</h5><p style="text-align: left;">- ' + d.description + '</p>';})
           .attr('y', -10)
           .attr('x', function(d, i) {return calculatedWidth - 12 - ((i + 1) * 10);})
           .attr('width', 10)
           .attr('height', 10)
-          .style('fill', function(d) {
+          .attr('xlink:href', function(d) {
             var status = (d.status || '').toLowerCase();
             if (status === 'ok') {
-              return 'url(#icon-checkmark-circled-icon)';
+              return 'icons/icon-checkmark-circled.svg';
             } else if (status.substr(0, 3) === 'err') {
-              return 'url(#icon-close-circled-icon)';
+              return 'icons/icon-close-circled.svg';
             } else if (status.substr(0, 4) === 'warn') {
-              return 'url(#icon-alert-circled-icon)';
+              return 'icons/icon-alert-circled.svg';
             } else {
-              return 'transparent';
+              return '';
             }
           });
-
       return nodes;
     };
 
