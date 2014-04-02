@@ -453,7 +453,11 @@ var topology = (function(topology, $, _, d3, console) {
     // Draw services bars across nodes in a tier
     self.drawTierServices = function(tiers) {
       var services = tiers.selectAll('.service')
-        .data(function(tier) {return _.map(tier.value.services || [], function(d) {return {key: d};});})
+        .data(function(tier) {
+          return jQuery.map(tier.value.services || [], function(d) {
+            return {key: d};
+          });
+        })
         .enter()
         .append('g')
           .attr('class', 'service')
