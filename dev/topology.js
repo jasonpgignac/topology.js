@@ -123,7 +123,9 @@ var topology = (function(topology, $, _, d3, console) {
     // Draw a topology diagram
     self.draw = function(data) {
       self.data = self.prepareData(data);
-      self.maxNodes = _.max(_.map(data.tiers, function(tier) {return _.size(tier.resources || {});}));
+      self.maxNodes = _.max(_.map(data.tiers, function(tier) {
+        return Object.keys(tier.resources || {}).length;
+      }));
 
       // draw border
       if (self.config.border === true) {
@@ -155,7 +157,7 @@ var topology = (function(topology, $, _, d3, console) {
       var maxNodes = 0;
       jQuery.each(data.tiers, function(key, tier) {
         // Find services running more than once on a single server
-        maxNodes = Math.max(maxNodes, _.size(tier.resources));
+        maxNodes = Math.max(maxNodes, Object.keys(tier.resources).length);
         var dupes = [];
         jQuery.each(tier.resources, function(_i, v) {
           v.tier = key; // mark each resource with its tier
@@ -210,7 +212,6 @@ var topology = (function(topology, $, _, d3, console) {
         // Get host opinions
         if (Object.getOwnPropertyNames(data || {}).indexOf('opinions') > -1) {
           jQuery.each(tier.resources, function(k, resource) {
-            console.log(k,resource);
             var opinions = resource.opinions || [];
             $.merge(opinions, d3.values(data.opinions.hosts[k]));
             if (opinions.length > 0) {
@@ -316,7 +317,9 @@ var topology = (function(topology, $, _, d3, console) {
           .attr('transform', function(d, i) {
             var fullNodeWidth = calculatedWidth + NODE_SEPARATOR;
             var totalWidth = self.maxNodes * (fullNodeWidth);
-            var resourceCount = _.size(self.data.tiers[d.value.tier].resources);
+            var resourceCount = Object.keys(
+              self.data.tiers[d.value.tier].resources
+            ).length;
             var nodeOffset = (totalWidth - (resourceCount * fullNodeWidth)) / 2;
             d.x = nodeOffset + (i * calculatedWidth) + NODES_LEFT_MERGIN;
             d.y = 20;
