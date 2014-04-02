@@ -380,7 +380,19 @@ var topology = (function(topology, $, _, d3, console) {
           .append('image')
             .attr('class', 'opinion topology-tooltip')
             .attr('title', function(d) {
-              return '<h5 style="text-align: left;">Status \"' + d.key + '\"</h5>' + _.reduce(d.value, function(memo, entry){ return memo + '<p style="text-align: left;">- ' + entry.description + '</p>';}, '');
+              var header = '\
+                <h5 style="text-align: left;">\
+                  Status \"' + d.key + '\"\
+                </h5>'
+              var descriptions = jQuery.map(d.value, function(entry, memo) {
+                var description = '\
+                  <p style="text-align: left;">\
+                    ' + (memo + 1) + ' - ' + entry.description + '\
+                  </p>';
+                console.log(description);
+                return description;
+              }).join('');
+              return header + descriptions;
             })
             .attr('y', 4)
             .attr('x', function(d, i) {return 4 + i * 10;})
