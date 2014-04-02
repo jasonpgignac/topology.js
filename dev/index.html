@@ -37,6 +37,8 @@ var multi_data = {
     dns: {
       resources: {
         'www.a.very.long.hostname.to.test.string.ellipses.com': {
+          // Testing that it will color unknown resources
+          status: 'green',
           connections: [{id: 'lb01'}]
         }
       }
@@ -71,7 +73,7 @@ var multi_data = {
           ]
         }, 
         slave: {
-          type: "compute",
+          type: "server",
           services: [
             {
               process:  "mysql",
@@ -95,7 +97,7 @@ var multi_data = {
       resources: {
         srv01: {
           id: "29847624",
-          type: "compute",
+          type: "server",
           services: [
             {
               process:  "apache2",
@@ -141,7 +143,7 @@ var multi_data = {
         },
         srv02: {
           id: "1000",
-          type: "compute",
+          type: "server",
           services: [
             {
               process:  "apache2",
@@ -220,7 +222,7 @@ var single = {
       resources: {
         srv01: {
           id: "29847624",
-          type: "compute",
+          type: "server",
           services: [
             {
               process:  "apache2",
