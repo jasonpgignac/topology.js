@@ -244,8 +244,21 @@ var topology = (function(topology, $, _, d3, console) {
         database: 100
       };
       var tierY = 5;
-      var keys = _.keys(data.tiers);
-      keys = _.sortBy(keys, function(key){return tierGravity[key] || tierGravity._default;});
+      
+      var keys = [];
+      for(var key in data.tiers) { keys.push(key)};
+      keys = keys.sort(function(a,b) {
+        var a_gravity = tierGravity[a] || tierGravity._default;
+        var b_gravity = tierGravity[b] || tierGravity._default;
+        if(a_gravity === b_gravity) {
+          return 0;
+        }
+        if(a_gravity > b_gravity) {
+          return 1;
+        }
+        return -1;
+      });
+      
       jQuery.each(keys, function(_i, key) {
         var tier = data.tiers[key];
         // Tier y-coords
