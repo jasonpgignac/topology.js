@@ -335,7 +335,6 @@ var topology = (function(topology, $, _, d3, console) {
       });
 
       // Calculate coords
-      var totalWidth = maxNodes * (NODE_WIDTH + NODE_SEPARATOR);
       var tierGravity = {  // determines where to place that tier vertically
         dns: 5,
         lb: 10,
@@ -352,10 +351,6 @@ var topology = (function(topology, $, _, d3, console) {
         tier.height = NODE_HEADER + 40 + (tier.services.length * SERVICE_HEIGHT);
         tier.y = tierY;
         tierY += tier.height + 5;
-
-        // Tier node distribution
-        var tierResourceCount = _.size(tier.resources);
-        tier.nodeOffset = (totalWidth - (_.size(tier.resources) * (NODE_WIDTH + NODE_SEPARATOR))) / 2 ;
       });
 
       return data;
@@ -393,7 +388,9 @@ var topology = (function(topology, $, _, d3, console) {
     // Draw the nodes for each a tier
     self.drawTierNodes = function(tiers) {
       var calculatedWidth = (self.width - NODES_LEFT_MERGIN) / self.maxNodes;
-
+      var fullNodeWidth = calculatedWidth + NODE_SEPARATOR;
+      var totalWidth = self.maxNodes * (fullNodeWidth);
+      
       var nodes = tiers.selectAll('.resource')
         .data(function(tier) {
           return d3.entries(tier.value.resources);
@@ -403,7 +400,9 @@ var topology = (function(topology, $, _, d3, console) {
           .attr('id', function(d) {return 'id_' + d.value.id || _.uniqueId();})
           .attr('class', 'resource')
           .attr('transform', function(d, i) {
-            d.x = self.data.tiers[d.value.tier].nodeOffset + (i * calculatedWidth) + NODES_LEFT_MERGIN;
+            var resourceCount = _.size(self.data.tiers[d.value.tier].resources);
+            var nodeOffset = (totalWidth - (resourceCount * fullNodeWidth)) / 2;
+            d.x = nodeOffset + (i * calculatedWidth) + NODES_LEFT_MERGIN;
             d.y = 20;
             return 'translate(' + [d.x, d.y] + ')';
           })
@@ -571,14 +570,16 @@ var topology = (function(topology, $, _, d3, console) {
       var target = d3.select(to)[0][0].__data__;
       var sourceTier = d3.select('#tier_' + source.value.tier)[0][0].__data__;
       var targetTier = d3.select('#tier_' + target.value.tier)[0][0].__data__;
+      var nodeWidth = (self.width - NODES_LEFT_MERGIN) / self.maxNodes;
+      
       self.canvas.append('line')
         .attr('class', 'link topology-tooltip')
         .attr('title', function(d) {
           return status;})
         .classed(status, 1)
-        .attr('x1', source.x + sourceTier.x + NODE_WIDTH/2)
+        .attr('x1', source.x + sourceTier.x + nodeWidth/2)
         .attr('y1', source.y + 1 + sourceTier.y + sourceTier.height - NODE_BOTTOM_MARGIN)
-        .attr('x2', target.x + targetTier.x + NODE_WIDTH/2)
+        .attr('x2', target.x + targetTier.x + nodeWidth/2)
         .attr('y2', target.y + targetTier.y);
     };
 
