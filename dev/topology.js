@@ -10,7 +10,7 @@
 
  Requires:
 
-   jQuery, bootstrap, d3, _.underscore, and icons
+   jQuery, bootstrap, d3, _.underscore, and icons (see DEFAULT_ICON_ROOT)
    Also topology.css
 
 ***************************************************************************
@@ -73,7 +73,9 @@ var topology = (function(topology, $, _, d3, console) {
     return '';
   }
 
-  var NODE_HEADER=55,
+  //TODO: Remove default icon root, and repackage images inside the repository.
+  var DEFAULT_ICON_ROOT = 'https://289d1f3753d5f066ce31-858f474b0c2ae883d2020e5da9286545.ssl.cf2.rackcdn.com/',
+      NODE_HEADER=55,
       NODES_LEFT_MERGIN = 70,
       NODE_BOTTOM_MARGIN = 30,
       NODE_SEPARATOR = 5,
