@@ -281,7 +281,9 @@ var topology = (function(topology, $, _, d3, console) {
     // Draw the nodes for each a tier
     self.drawTierNodes = function(tiers) {
       var calculatedWidth = (self.width - NODES_LEFT_MERGIN) / self.maxNodes;
-
+      var fullNodeWidth = calculatedWidth + NODE_SEPARATOR;
+      var totalWidth = self.maxNodes * (fullNodeWidth);
+      
       var nodes = tiers.selectAll('.resource')
         .data(function(tier) {
           return d3.entries(tier.value.resources);
@@ -291,8 +293,6 @@ var topology = (function(topology, $, _, d3, console) {
           .attr('id', function(d) {return 'id_' + d.value.id || _.uniqueId();})
           .attr('class', 'resource')
           .attr('transform', function(d, i) {
-            var fullNodeWidth = calculatedWidth + NODE_SEPARATOR;
-            var totalWidth = self.maxNodes * (fullNodeWidth);
             var resourceCount = _.size(self.data.tiers[d.value.tier].resources);
             var nodeOffset = (totalWidth - (resourceCount * fullNodeWidth)) / 2;
             d.x = nodeOffset + (i * calculatedWidth) + NODES_LEFT_MERGIN;
